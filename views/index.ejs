@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Group Chat</title>
+	<style>
+		#message_box{
+			width:300px;
+			height:300px;
+			border: 4px solid black;
+			margin:20px;
+		}
+	</style>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script type ="text/javascript" src="/socket.io/socket.io.js"></script>
+    <script type ="text/javascript">
+        $(document).ready(function (){
+        	var name= prompt('enter your Name');
+        	if(name){
+	        	var socket = io.connect();
+	            socket.emit('new_name',{name:name});
+	            socket.on('got_new_name', function(data){
+	            	$('#message_box').html($('#message_box').html()+'<p>'+ data.name +' entered the room...</p>'); 
+	            	console.log(data.name +' entered room');
+	            })
+
+	        	$('#send').click(function(){
+	        		var message_info={name:name,message:$('#message').val()};
+	        		socket.emit('new_message', message_info);
+	        		socket.on('message_sent',function(data){
+	        			$('#message_box').html($('#message_box').html()+ '<p>'+data.name + ': ' + data.message +'</p>');
+	        			console.log(data.name +': ' + data.message);
+	        		})
+	        	});
+	        }
+
+        })
+    </script>
+</head>
+<body>
+	<div id='message_box'></div>
+	<div>
+		My Form:
+		<textarea  name='message' id='message' cols='20' rows='10'></textarea>
+		<button id='send'>send!!</button>
+	</div>
+</body>
+</html>
